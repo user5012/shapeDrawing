@@ -2,7 +2,7 @@ package window;
 
 import javax.swing.JButton;
 
-public class MyButtons {
+public class MyButtons extends JButton {
     String name;
     int width;
     int height;
