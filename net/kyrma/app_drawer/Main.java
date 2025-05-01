@@ -1,5 +1,5 @@
-import net.kyrma.app_drawer.window.MyButtons;
-import net.kyrma.app_drawer.window.MyWindow;
+import window.MyButtons;
+import window.MyWindow;
 import javax.swing.JButton;
 import java.util.ArrayList;
 

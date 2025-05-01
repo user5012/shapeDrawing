@@ -1,4 +1,4 @@
-package net.kyrma.app_drawer.window;
+package window;
 
 import java.util.ArrayList;
 
