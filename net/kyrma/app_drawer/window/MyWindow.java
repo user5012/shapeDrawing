@@ -67,4 +67,12 @@ public class MyWindow {
         frame.setVisible(true);
     }
 
+    public void repaint() {
+        panel.repaint(); // Repaint the panel to update the shapes
+    }
+
+    public JFrame getFrame() {
+        return frame; // Return the JFrame object
+    }
+
 }

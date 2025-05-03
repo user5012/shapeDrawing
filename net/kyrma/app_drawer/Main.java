@@ -1,27 +1,34 @@
-import window.MyButtons;
+import window.MyMouseHandler;
 import window.MyWindow;
-import javax.swing.JButton;
-
-import Shape.Rectangle;
-
-import Shape.Circle;
-
-import java.util.ArrayList;
+import usefull.MyWindowButtons;
+import usefull.PublicStuff;
 
 class Main {
 
     public static void main(String[] args) {
-        MyButtons button1 = new MyButtons("Click Me", 100, 50, 100, 30, () -> {
-            System.out.println("Button clicked!"); // Action to perform when the button is clicked
-        }); // Add a button at (50, 50) with size (100, 30)
-        ArrayList<JButton> buttons = new ArrayList<>();
-        ArrayList<Circle> circles = new ArrayList<>();
-        ArrayList<Rectangle> rectangles = new ArrayList<>();
-        rectangles.add(new Rectangle(50, 50, 200, 200)); // Add a rectangle with
-        buttons.add(button1.getButton()); // Add the button to the list of buttons
 
-        MyWindow window = new MyWindow("My Application", 800, 600, buttons, circles, rectangles);
-        window.ShowWindow();
+        final MyWindow[] windowHolder = new MyWindow[1]; // Array to hold the window reference
+        windowHolder[0] = PublicStuff.window; // Initialize the window reference
+        final MyWindowButtons windowButtons = new MyWindowButtons(); // Create an instance of MyWindowButtons
+        windowButtons.addButtons(); // Add buttons to the window
 
+        PublicStuff.window = new MyWindow(PublicStuff.TITLE, PublicStuff.WIDTH, PublicStuff.HEIGHT, PublicStuff.buttons,
+                PublicStuff.circles, PublicStuff.rectangles); // creates window
+
+        PublicStuff.frame = PublicStuff.window.getFrame(); // Set the frame reference in PublicStuff
+
+        PublicStuff.window.ShowWindow();
+
+        MyMouseHandler.getClicks(); // Start the mouse handler loop
+
+        while (true) {
+            try {
+                Thread.sleep(100); // Sleep for a short duration to avoid busy waiting
+            } catch (InterruptedException e) {
+                e.printStackTrace(); // Handle the exception
+            }
+            MyMouseHandler.getClicks(); // Call the mouse handler to check for clicks
+
+        }
     }
 }

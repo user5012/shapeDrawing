@@ -29,6 +29,6 @@ public class Rectangle extends Shape {
     }
 
     public void draw(Graphics g) {
-        g.drawRect(getX(), getY(), width, height); // Draw the rectangle
+        g.fillRect(getX(), getY(), width, height); // Draw the rectangle
     }
 }

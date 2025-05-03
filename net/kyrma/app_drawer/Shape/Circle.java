@@ -19,6 +19,6 @@ public class Circle extends Shape {
     }
 
     public void draw(Graphics g) {
-        g.drawOval(getX(), getY(), radius * 2, radius * 2); // Draw the circle
+        g.fillOval(getX(), getY(), radius * 2, radius * 2); // Draw the circle
     }
 }
