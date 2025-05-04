@@ -5,31 +5,51 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import java.awt.*;
+
 import Shape.Circle;
 import Shape.Rectangle;
+import Shape.MyShape;
+
+import java.util.List;
 
 public class MyWindow {
+    public static enum ButtonPressedType {
+        ADD_CIRCLE, ADD_RECTANGLE, SELECT_SHAPE, NONE // Enum to represent different shape types
+    }
+
     String title;
     int width;
     int height;
     private JFrame frame;
-    private ArrayList<JButton> buttons;
-    private ArrayList<Circle> circles;
-    private ArrayList<Rectangle> rectangles;
+    private List<JButton> buttons;
+    private List<MyShape> shapes = new ArrayList<>(); // List to hold all shapes
     private JPanel panel;
+    public ButtonPressedType buttonPressedType = ButtonPressedType.NONE; // Variable to store the type of button
 
-    void canvas(int canvasWidth, int canvasHeight) {
+    public MyWindow() {
+        this.title = "My Window"; // Set the title of the window
+        this.width = 400; // Set the width of the window
+        this.height = 800; // Set the height of the window
+        this.buttons = createButtons(); // Create buttons for the window
+
+        canvas(500, 500);
+        craftWindow();
+
+    }
+
+    private void canvas(int canvasWidth, int canvasHeight) {
         panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                for (Circle circle : circles) {
-                    circle.draw(g); // Draw the circle
-                }
-                for (Rectangle rectangle : rectangles) {
-                    rectangle.draw(g); // Draw the rectangle
+                for (MyShape shape : shapes) {
+                    shape.draw(g); // Draw the circle
                 }
             }
         };
@@ -37,7 +57,7 @@ public class MyWindow {
         panel.setLayout(null); // Use null layout for absolute positioning
     }
 
-    void craftWindow() {
+    private void craftWindow() {
         this.frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(width, height);
@@ -50,29 +70,75 @@ public class MyWindow {
 
     }
 
-    public MyWindow(String title, int width, int height, ArrayList<JButton> buttons, ArrayList<Circle> circles,
-            ArrayList<Rectangle> rectangles) {
-        this.title = title;
-        this.width = width;
-        this.height = height;
-        this.buttons = buttons;
-        this.circles = circles;
-        this.rectangles = rectangles;
-        canvas(400, 400);
-        craftWindow();
+    private static JButton createButton(String text, int x, int y, int width, int height, Runnable action) {
+        JButton button = new JButton(text);
+        button.setBounds(x, y, width, height); // Set button position and size
+        button.addActionListener(e -> action.run()); // Add action listener to the button
+        return button;
+    }
 
+    private List<JButton> createButtons() {
+        List<JButton> buttons = new ArrayList<>();
+        buttons.add(createButton("Add Circle", 100, 50, 100, 30, () -> {
+            buttonPressedType = ButtonPressedType.ADD_CIRCLE; // Set the button pressed type to
+        }));
+        buttons.add(createButton("Add Rectangle", 100, 50, 100, 90, () -> {
+            buttonPressedType = ButtonPressedType.ADD_RECTANGLE; // Set the button pressed type
+                                                                 // to
+        }));
+        buttons.add(createButton("Select Shape", 100, 50, 100, 130, () -> {
+            buttonPressedType = ButtonPressedType.SELECT_SHAPE; // Set the button pressed type
+        }));
+        buttons.add(createButton("Move All Shapes", 100, 50, 100, 90, () -> {
+            for (MyShape shape : shapes) {
+                shape.setX(shape.getX() + 10); // Move all shapes to the right by 10 pixels
+                shape.setY(shape.getY() + 10); // Move all shapes down by 10 pixels
+            }
+            frame.repaint(); // Repaint the frame to update the shapes
+        }));
+        return buttons;
     }
 
     public void ShowWindow() {
         frame.setVisible(true);
+        initializeMouseListeners(); // Call the mouse handler to check for clicks
     }
 
     public void repaint() {
+        frame.repaint(); // Repaint the frame to update the shapes
         panel.repaint(); // Repaint the panel to update the shapes
     }
 
-    public JFrame getFrame() {
-        return frame; // Return the JFrame object
+    public void initializeMouseListeners() {
+
+        frame.getContentPane().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                switch (buttonPressedType) {
+                    case ADD_CIRCLE:
+                        addCircle(e.getX(), e.getY()); // Add a circle at the mouse position
+                        break;
+                    case ADD_RECTANGLE:
+                        addRectangle(e.getX(), e.getY()); // Add a rectangle at the mouse position
+                        break;
+                    case SELECT_SHAPE:
+                        // Implement selection logic here
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    public void addCircle(int x, int y) {
+        shapes.add(new Circle(10, x, y)); // Add a new circle to the list with a radius of 50
+        frame.repaint(); // Repaint the frame to update the shapes
+    }
+
+    public void addRectangle(int x, int y) {
+        shapes.add(new Rectangle(50, 30, x, y)); // Add a new rectangle to the list with width 50 and height 30
+        frame.repaint(); // Repaint the frame to update the shapes
     }
 
 }

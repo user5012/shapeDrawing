@@ -2,7 +2,7 @@ package Shape;
 
 import java.awt.*;
 
-public class Rectangle extends Shape {
+public class Rectangle extends MyShape {
     private int width;
     private int height;
 

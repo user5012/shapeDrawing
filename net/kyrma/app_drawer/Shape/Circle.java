@@ -2,7 +2,7 @@ package Shape;
 
 import java.awt.*;
 
-public class Circle extends Shape {
+public class Circle extends MyShape {
     private int radius;
 
     public Circle(int radius, int x, int y) {
