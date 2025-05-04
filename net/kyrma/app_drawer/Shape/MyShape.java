@@ -5,6 +5,8 @@ import java.awt.*;
 public abstract class MyShape {
     private int x;
     private int y;
+    private boolean _isSelected;
+    private Color color = Color.BLACK; // Default color
 
     public MyShape(int x, int y) {
         this.x = x;
@@ -27,5 +29,28 @@ public abstract class MyShape {
         this.y = y;
     }
 
-    public abstract void draw(Graphics g); // Abstract method to be implemented by subclasses
+    public void draw(Graphics g) {
+        g.setColor(color);
+    }
+
+    public boolean isPointInside(int pointX, int pointY) {
+        return false;
+    }
+
+    public void selectShape() {
+        _isSelected = true;
+        // change color to indicate selection
+        color = Color.RED; // Change color to red when selected
+
+    }
+
+    public void deselectShape() {
+        _isSelected = false;
+        // change color to indicate deselection
+        color = Color.BLACK; // Change color back to black when deselected
+    }
+
+    public boolean isSelected() {
+        return _isSelected;
+    }
 }

@@ -96,6 +96,10 @@ public class MyWindow {
             }
             frame.repaint(); // Repaint the frame to update the shapes
         }));
+        buttons.add(createButton("Delete All Shapes", 100, 50, 100, 130, () -> {
+            shapes.clear(); // Clear the list of shapes
+            frame.repaint(); // Repaint the frame to update the shapes
+        }));
         return buttons;
     }
 
@@ -122,7 +126,15 @@ public class MyWindow {
                         addRectangle(e.getX(), e.getY()); // Add a rectangle at the mouse position
                         break;
                     case SELECT_SHAPE:
-                        // Implement selection logic here
+                        for (MyShape shape : shapes) {
+                            if (shape.isPointInside(e.getX(), e.getY())) { // Check if the mouse click is inside the
+                                                                           // shape
+                                shape.selectShape(); // Select the shape
+                            } else {
+                                shape.deselectShape(); // Deselect the shape
+                            }
+                        }
+                        frame.repaint(); // Repaint the frame to update the shapes
                         break;
                     default:
                         break;

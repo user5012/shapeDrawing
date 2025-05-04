@@ -1,0 +1,5 @@
+1. Set shape color (normal, selected)
+
+2. Set shape bool isSelected
+
+3. Create abstract method: boolean isPointInside(int clickedX, clickedY){return flase;}

@@ -29,6 +29,12 @@ public class Rectangle extends MyShape {
     }
 
     public void draw(Graphics g) {
+        super.draw(g); // Call the parent draw method to set color based on selection
         g.fillRect(getX(), getY(), width, height); // Draw the rectangle
+    }
+
+    @Override
+    public boolean isPointInside(int pointX, int pointY) {
+        return pointX >= getX() && pointX <= getX() + width && pointY >= getY() && pointY <= getY() + height;
     }
 }
