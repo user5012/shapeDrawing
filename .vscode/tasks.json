@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Compile Java",
+        "type": "shell",
+        "command": "cmd",
+        "args": [
+          "/c",
+          "for /R net %f in (*.java) do @echo %f >> sources.txt && javac -d bin -sourcepath . @sources.txt && del sources.txt"
+        ],
+        "problemMatcher": []
+      },
+      {
+        "label": "Create JAR",
+        "type": "shell",
+        "command": "jar",
+        "args": [
+          "cfve",
+          "bin/app.jar",
+          "net.kyrma.app_drawer.Main",
+          "-C", "bin", "."
+        ],
+        "dependsOn": ["Compile Java"],
+        "problemMatcher": []
+      }
+    ]
+  }
+  

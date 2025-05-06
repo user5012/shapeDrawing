@@ -1,6 +1,7 @@
 package window;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -8,7 +9,7 @@ import javax.swing.JPanel;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+import java.awt.event.MouseMotionAdapter;
 import java.awt.*;
 
 import Shape.Circle;
@@ -16,6 +17,7 @@ import Shape.Rectangle;
 import Shape.MyShape;
 
 import java.util.List;
+import java.util.Map;
 
 public class MyWindow {
     public static enum ButtonPressedType {
@@ -30,6 +32,9 @@ public class MyWindow {
     private List<MyShape> shapes = new ArrayList<>(); // List to hold all shapes
     private JPanel panel;
     public ButtonPressedType buttonPressedType = ButtonPressedType.NONE; // Variable to store the type of button
+    private final List<MyShape> selectedShapes = new ArrayList<>(); // List to hold selected shapes
+    private final Map<MyShape, Point> dragOffsets = new HashMap<>();
+    private boolean clickedShape = false; // Flag to check if a shape is clicked
 
     public MyWindow() {
         this.title = "My Window"; // Set the title of the window
@@ -49,11 +54,12 @@ public class MyWindow {
                 super.paintComponent(g);
 
                 for (MyShape shape : shapes) {
-                    shape.draw(g); // Draw the circle
+                    shape.draw(g);
                 }
             }
         };
         panel.setPreferredSize(new Dimension(canvasWidth, canvasHeight)); // Set the preferred size of the panel
+        panel.setBackground(Color.lightGray); // Set the background color of the panel
         panel.setLayout(null); // Use null layout for absolute positioning
     }
 
@@ -98,6 +104,7 @@ public class MyWindow {
         }));
         buttons.add(createButton("Delete All Shapes", 100, 50, 100, 130, () -> {
             shapes.clear(); // Clear the list of shapes
+            selectedShapes.clear(); // Clear the list of selected shapes
             frame.repaint(); // Repaint the frame to update the shapes
         }));
         return buttons;
@@ -116,6 +123,27 @@ public class MyWindow {
     public void initializeMouseListeners() {
 
         frame.getContentPane().addMouseListener(new MouseAdapter() {
+
+            public void mousePressed(MouseEvent e) {
+                // TODO Auto-generated method stub
+                super.mousePressed(e);
+                dragOffsets.clear(); // Clear the drag offsets map
+                for (MyShape shape : selectedShapes) {
+                    int offsetX = e.getX() - shape.getX(); // Calculate the offset between the mouse position and the
+                                                           // shape's position
+                    int offsetY = e.getY() - shape.getY(); // Calculate the offset between the mouse position and the
+                                                           // shape's position
+                    dragOffsets.put(shape, new Point(offsetX, offsetY)); // Store the offset in the drag offsets map
+
+                }
+            }
+
+            public void mouseReleased(MouseEvent e) {
+                // TODO Auto-generated method stub
+                super.mouseReleased(e);
+                dragOffsets.clear(); // Clear the drag offsets map when the mouse is released
+            }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 switch (buttonPressedType) {
@@ -126,31 +154,59 @@ public class MyWindow {
                         addRectangle(e.getX(), e.getY()); // Add a rectangle at the mouse position
                         break;
                     case SELECT_SHAPE:
+                        clickedShape = false; // Reset the clicked shape flag
                         for (MyShape shape : shapes) {
                             if (shape.isPointInside(e.getX(), e.getY())) { // Check if the mouse click is inside the
                                                                            // shape
-                                shape.selectShape(); // Select the shape
-                            } else {
-                                shape.deselectShape(); // Deselect the shape
+                                if (shape.isSelected()) {
+                                    shape.deselectShape(); // Deselect the shape
+                                    selectedShapes.remove(shape); // Remove the shape from the selected shapes list
+                                } else {
+                                    shape.selectShape(); // Select the shape
+                                    selectedShapes.add(shape); // Add the shape to the selected shapes list
+                                }
+                                clickedShape = true; // Set the clicked shape flag to true
+
                             }
                         }
-                        frame.repaint(); // Repaint the frame to update the shapes
+
+                        if (!clickedShape) {
+                            for (MyShape shape : shapes) {
+                                shape.deselectShape(); // Deselect all shapes if no shape is clicked
+                            }
+                            selectedShapes.clear(); // Clear the selected shapes list
+                        }
+                        repaint(); // Repaint the frame to update the shapes
                         break;
                     default:
                         break;
                 }
             }
         });
+
+        frame.getContentPane().addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                for (MyShape shape : selectedShapes) {
+                    Point offset = dragOffsets.get(shape); // Get the offset for the shape
+                    if (offset != null) {
+                        shape.setX(e.getX() - offset.x); // Move the selected shape to the mouse position
+                        shape.setY(e.getY() - offset.y); // Move the selected shape to the mouse position
+                    }
+                    repaint(); // Repaint the frame to update the shapes
+                }
+            }
+        });
     }
 
     public void addCircle(int x, int y) {
-        shapes.add(new Circle(10, x, y)); // Add a new circle to the list with a radius of 50
-        frame.repaint(); // Repaint the frame to update the shapes
+        shapes.add(new Circle(30, x, y)); // Add a new circle to the list with a radius of 50
+        repaint(); // Repaint the frame to update the shapes
     }
 
     public void addRectangle(int x, int y) {
         shapes.add(new Rectangle(50, 30, x, y)); // Add a new rectangle to the list with width 50 and height 30
-        frame.repaint(); // Repaint the frame to update the shapes
+        repaint(); // Repaint the frame to update the shapes
     }
 
 }

@@ -30,7 +30,9 @@ public class Rectangle extends MyShape {
 
     public void draw(Graphics g) {
         super.draw(g); // Call the parent draw method to set color based on selection
-        g.fillRect(getX(), getY(), width, height); // Draw the rectangle
+        int topLeftX = getX() - width / 2; // Center the rectangle
+        int topLeftY = getY() - height / 2; // Center the rectangle
+        g.fillRect(topLeftX, topLeftY, width, height); // Draw the rectangle
     }
 
     @Override

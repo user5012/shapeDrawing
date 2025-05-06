@@ -20,13 +20,16 @@ public class Circle extends MyShape {
 
     public void draw(Graphics g) {
         super.draw(g); // Call the parent draw method to set color based on selection
-        g.fillOval(getX(), getY(), radius * 2, radius * 2); // Draw the circle
+        int topLeftX = getX() - radius;
+        int topLeftY = getY() - radius;
+
+        g.fillOval(topLeftX, topLeftY, radius * 2, radius * 2); // Draw the circle
     }
 
     @Override
     public boolean isPointInside(int pointX, int pointY) {
-        int centerX = getX() + radius;
-        int centerY = getY() + radius;
+        int centerX = getX();
+        int centerY = getY();
         return Math.pow(pointX - centerX, 2) + Math.pow(pointY - centerY, 2) <= Math.pow(radius, 2);
     }
 }
