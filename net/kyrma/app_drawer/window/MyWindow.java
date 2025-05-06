@@ -14,6 +14,7 @@ import java.awt.*;
 
 import Shape.Circle;
 import Shape.Rectangle;
+import usefull.Vector2d;
 import Shape.MyShape;
 
 import java.util.List;
@@ -30,25 +31,24 @@ public class MyWindow {
     private JFrame frame;
     private List<JButton> buttons;
     private List<MyShape> shapes = new ArrayList<>(); // List to hold all shapes
-    private JPanel panel;
     public ButtonPressedType buttonPressedType = ButtonPressedType.NONE; // Variable to store the type of button
     private final List<MyShape> selectedShapes = new ArrayList<>(); // List to hold selected shapes
     private final Map<MyShape, Point> dragOffsets = new HashMap<>();
     private boolean clickedShape = false; // Flag to check if a shape is clicked
+    private Vector2d canvasDimensionsVector2d = new Vector2d(500, 500); // Variable to store mouse position
+    private JPanel canva = new JPanel(); // Panel to draw shapes
 
     public MyWindow() {
         this.title = "My Window"; // Set the title of the window
         this.width = 400; // Set the width of the window
         this.height = 800; // Set the height of the window
         this.buttons = createButtons(); // Create buttons for the window
-
-        canvas(500, 500);
         craftWindow();
 
     }
 
-    private void canvas(int canvasWidth, int canvasHeight) {
-        panel = new JPanel() {
+    private JPanel canvas(int canvasWidth, int canvasHeight) {
+        JPanel canvas = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -58,9 +58,23 @@ public class MyWindow {
                 }
             }
         };
-        panel.setPreferredSize(new Dimension(canvasWidth, canvasHeight)); // Set the preferred size of the panel
-        panel.setBackground(Color.lightGray); // Set the background color of the panel
-        panel.setLayout(null); // Use null layout for absolute positioning
+        canvas.setPreferredSize(new Dimension(canvasWidth, canvasHeight)); // Set the preferred size of the panel
+        canvas.setBackground(Color.lightGray); // Set the background color of the panel
+        canvas.setLayout(null); // Use null layout for absolute positioning
+        canva = canvas; // Assign the canvas to the class variable
+        return canvas; // Return the panel
+    }
+
+    private JPanel buttonsPanel() {
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout()); // Use FlowLayout for the buttons panel
+        buttonsPanel.setPreferredSize(new Dimension(200, 500));
+        buttonsPanel.setLayout(new GridLayout(0, 1)); // Use GridLayout for the buttons panel
+        buttonsPanel.setBackground(Color.lightGray); // Set the background color of the buttons panel
+        for (JButton button : buttons) {
+            buttonsPanel.add(button); // Add the button to the buttons panel
+        }
+        return buttonsPanel; // Return the buttons panel
     }
 
     private void craftWindow() {
@@ -68,10 +82,8 @@ public class MyWindow {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(width, height);
         frame.setLayout(new FlowLayout()); // Use FlowLayout for the frame
-        frame.add(panel);
-        for (JButton button : buttons) {
-            frame.add(button); // Add the button to the frame
-        }
+        frame.add(canvas(500, 500)); // Add the canvas to the frame
+        frame.add(buttonsPanel()); // Add the buttons panel to the frame
         frame.pack(); // Pack the frame to fit the components
 
     }
@@ -117,12 +129,12 @@ public class MyWindow {
 
     public void repaint() {
         frame.repaint(); // Repaint the frame to update the shapes
-        panel.repaint(); // Repaint the panel to update the shapes
+        canvas(canvasDimensionsVector2d.getX(), canvasDimensionsVector2d.getY()).repaint(); // Repaint the panel to
+                                                                                            // update the shapes
     }
 
     public void initializeMouseListeners() {
-
-        frame.getContentPane().addMouseListener(new MouseAdapter() {
+        canva.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent e) {
                 // TODO Auto-generated method stub
@@ -184,7 +196,7 @@ public class MyWindow {
             }
         });
 
-        frame.getContentPane().addMouseMotionListener(new MouseMotionAdapter() {
+        canva.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 for (MyShape shape : selectedShapes) {
