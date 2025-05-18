@@ -29,6 +29,10 @@ public abstract class MyShape {
         this.y = y;
     }
 
+    public Color getColor() {
+        return isSelected() ? Color.RED : Color.BLACK; // Change color based on selection
+    }
+
     public void draw(Graphics g) {
         g.setColor(color);
     }

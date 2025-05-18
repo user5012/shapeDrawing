@@ -13,6 +13,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.*;
 
 import Shape.Circle;
+import Shape.DrawnLine;
 import Shape.Rectangle;
 import usefull.Vector2d;
 import Shape.MyShape;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 public class MyWindow {
     public static enum ButtonPressedType {
-        ADD_CIRCLE, ADD_RECTANGLE, SELECT_SHAPE, NONE // Enum to represent different shape types
+        ADD_CIRCLE, ADD_RECTANGLE, SELECT_SHAPE, DRAW_LINE, NONE // Enum to represent different shape types
     }
 
     String title;
@@ -37,6 +38,7 @@ public class MyWindow {
     private boolean clickedShape = false; // Flag to check if a shape is clicked
     private Vector2d canvasDimensionsVector2d = new Vector2d(500, 500); // Variable to store mouse position
     private JPanel canva = new JPanel(); // Panel to draw shapes
+    private DrawnLine currLine = null;
 
     public MyWindow() {
         this.title = "My Window"; // Set the title of the window
@@ -114,9 +116,13 @@ public class MyWindow {
             }
             frame.repaint(); // Repaint the frame to update the shapes
         }));
+        buttons.add(createButton("Draw Line", 100, 50, 100, 130, () -> {
+            buttonPressedType = ButtonPressedType.DRAW_LINE;
+        }));
         buttons.add(createButton("Delete All Shapes", 100, 50, 100, 130, () -> {
             shapes.clear(); // Clear the list of shapes
             selectedShapes.clear(); // Clear the list of selected shapes
+            currLine = null; // Clear the current line
             frame.repaint(); // Repaint the frame to update the shapes
         }));
         return buttons;
@@ -153,14 +159,14 @@ public class MyWindow {
             public void mouseReleased(MouseEvent e) {
                 // TODO Auto-generated method stub
                 super.mouseReleased(e);
-                dragOffsets.clear(); // Clear the drag offsets map when the mouse is released
+                dragOffsets.clear(); // Clear the drag offsets map when the mouse is releasedW
             }
 
             @Override
             public void mouseClicked(MouseEvent e) {
                 switch (buttonPressedType) {
                     case ADD_CIRCLE:
-                        addCircle(e.getX(), e.getY()); // Add a circle at the mouse position
+                        addCircle(e.getX(), e.getY(), 30); // Add a circle at the mouse position
                         break;
                     case ADD_RECTANGLE:
                         addRectangle(e.getX(), e.getY()); // Add a rectangle at the mouse position
@@ -199,20 +205,35 @@ public class MyWindow {
         canva.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                for (MyShape shape : selectedShapes) {
-                    Point offset = dragOffsets.get(shape); // Get the offset for the shape
-                    if (offset != null) {
-                        shape.setX(e.getX() - offset.x); // Move the selected shape to the mouse position
-                        shape.setY(e.getY() - offset.y); // Move the selected shape to the mouse position
-                    }
-                    repaint(); // Repaint the frame to update the shapes
+                switch (buttonPressedType) {
+                    case SELECT_SHAPE:
+                        for (MyShape shape : selectedShapes) {
+                            Point offset = dragOffsets.get(shape); // Get the offset for the shape
+                            if (offset != null) {
+                                shape.setX(e.getX() - offset.x); // Move the selected shape to the mouse position
+                                shape.setY(e.getY() - offset.y); // Move the selected shape to the mouse position
+                            }
+                            repaint(); // Repaint the frame to update the shapes
+                        }
+                        break;
+                    case DRAW_LINE:
+                        if (currLine == null) {
+                            currLine = new DrawnLine(); // Create a new line if it doesn't exist
+                            shapes.add(currLine); // Add the line to the list of lines
+                        }
+                        currLine.addPoint(e.getX(), e.getY()); // Add the current mouse position to the line
+                        repaint(); // Repaint the frame to update the shapes
+                        break;
+                    default:
+                        break;
+
                 }
             }
         });
     }
 
-    public void addCircle(int x, int y) {
-        shapes.add(new Circle(30, x, y)); // Add a new circle to the list with a radius of 50
+    public void addCircle(int x, int y, int radius) {
+        shapes.add(new Circle(radius, x, y)); // Add a new circle to the list with a radius of 50
         repaint(); // Repaint the frame to update the shapes
     }
 
@@ -220,5 +241,4 @@ public class MyWindow {
         shapes.add(new Rectangle(50, 30, x, y)); // Add a new rectangle to the list with width 50 and height 30
         repaint(); // Repaint the frame to update the shapes
     }
-
 }
